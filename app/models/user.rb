@@ -105,14 +105,21 @@ class User < ActiveRecord::Base
   # Overwrite Devise method to send welcome email to new users with confirmation token
   # Users who registered before confirmation was required receive normal confirmation email
   def send_confirmation_instructions
+    puts "Equal? #{Time.now.gmtime.strftime('%D') == self.confirmation_sent_at.gmtime.strftime('%D')}"
     unless @raw_confirmation_token
       generate_confirmation_token!
     end
-    if self.reg_before_conf == true
+    if self.confirmation_sent_at.gmtime.strftime('%D') === Time.now.gmtime.strftime('%D')
+      puts "New user"
+      send_welcome_email(@raw_confirmation_token)
+    elsif self.reg_before_conf == true 
+      puts "Reg before conf"
       opts = pending_reconfirmation? ? { to: unconfirmed_email } : { }
       send_devise_notification(:confirmation_instructions, @raw_confirmation_token, opts)
     else  # new user
-      send_welcome_email(@raw_confirmation_token)
+      puts "Confirmation sent before"
+      opts = pending_reconfirmation? ? { to: unconfirmed_email } : { }
+      send_devise_notification(:confirmation_instructions, @raw_confirmation_token, opts)      
     end
   end
 

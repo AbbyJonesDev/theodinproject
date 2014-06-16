@@ -67,8 +67,14 @@ describe "Sign Up" do
       it "resends confirmation instructions when user clicks link" do
         click_on("Didn't receive instructions or need them again?")
         fill_in("Email", with: @forgetful.email)
+            puts "Equal? #{Time.now.gmtime.strftime('%D') == @forgetful.confirmation_sent_at.gmtime.strftime('%D')}"
+            puts "Time now: #{Time.now.gmtime.strftime('%D')}"
+            puts "Confirmation sent at: #{@forgetful.confirmation_sent_at.gmtime.strftime('%D')}"
         click_on("Resend confirmation instructions")
-        ActionMailer::Base.deliveries.last.encoded.should include "Confirm your email"
+            puts "Equal? #{Time.now.gmtime.strftime('%D') == @forgetful.confirmation_sent_at.gmtime.strftime('%D')}"
+            puts "Time now: #{Time.now.gmtime.strftime('%D')}"
+            puts "Confirmation sent at: #{@forgetful.confirmation_sent_at.gmtime.strftime('%D')}"
+        ActionMailer::Base.deliveries.last.encoded.should include "Subject: Confirm your email"
       end
     end
 
